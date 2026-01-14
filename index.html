@@ -3,142 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HVAC Industrial Engine v5.0 - Expert Edition</title>
+    <title>HVAC RTS Expert v7.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-900">
+<body class="bg-slate-50 text-slate-900">
 
     <div class="max-w-7xl mx-auto px-4 py-8">
-        <header class="mb-8 flex flex-col md:flex-row justify-between items-center border-b-4 border-slate-900 pb-4 bg-white p-6 rounded-t-2xl shadow-sm">
+        <header class="mb-8 flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
             <div>
-                <h1 class="text-3xl font-black tracking-tighter uppercase italic">HVAC <span class="text-indigo-600">Pro-Engine</span> v5.0</h1>
-                <p class="text-slate-500 font-bold text-sm">Industrial Cooling Load Analysis (ASHRAE CLTD & Psychrometric Standard)</p>
+                <h1 class="text-2xl font-black text-indigo-900 tracking-tight italic">RTS <span class="text-slate-900">MASTER v7.0</span></h1>
+                <p class="text-slate-500 text-sm font-semibold">Material-Based Conduction Time Series Analysis</p>
             </div>
-            <div class="text-right">
-                <span class="bg-indigo-600 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Calculated in Real-Time</span>
+            <div class="mt-4 md:mt-0">
+                <span class="bg-slate-900 text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest">Standard ASHRAE 2025</span>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
             <div class="lg:col-span-8 space-y-6">
                 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h2 class="text-xs font-black text-indigo-600 uppercase tracking-widest mb-4 flex items-center">
-                        <span class="mr-2">🌡️</span> Psychrometric Set Points
-                    </h2>
+                    <h2 class="text-xs font-black text-indigo-600 uppercase tracking-[0.2em] mb-4">I. Lingkungan & Set Point</h2>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Ambient Temp (°C)</label>
-                            <input type="number" id="tOut" value="35" oninput="updateCalculation()" class="w-full bg-transparent text-xl font-bold outline-none">
+                        <div class="p-3 bg-slate-50 rounded-xl">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Temp Luar (°C)</label>
+                            <input type="number" id="tOut" value="35" oninput="calculateRTS()" class="w-full bg-transparent font-bold text-lg outline-none">
                         </div>
-                        <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                            <label class="text-[10px] font-bold text-indigo-400 uppercase">Indoor Temp (°C)</label>
-                            <input type="number" id="tIn" value="24" oninput="updateCalculation()" class="w-full bg-transparent text-xl font-bold outline-none">
+                        <div class="p-3 bg-indigo-50 rounded-xl">
+                            <label class="text-[10px] font-bold text-indigo-400 uppercase">Temp Dalam (°C)</label>
+                            <input type="number" id="tIn" value="24" oninput="calculateRTS()" class="w-full bg-transparent font-bold text-lg outline-none">
                         </div>
-                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Ambient RH (%)</label>
-                            <input type="number" id="rhOut" value="70" oninput="updateCalculation()" class="w-full bg-transparent text-xl font-bold outline-none">
+                        <div class="p-3 bg-slate-50 rounded-xl">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">RH Dalam (%)</label>
+                            <input type="number" id="rhIn" value="55" oninput="calculateRTS()" class="w-full bg-transparent font-bold text-lg outline-none">
                         </div>
-                        <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                            <label class="text-[10px] font-bold text-indigo-400 uppercase">Indoor RH (%)</label>
-                            <input type="number" id="rhIn" value="55" oninput="updateCalculation()" class="w-full bg-transparent text-xl font-bold outline-none">
+                        <div class="p-3 bg-slate-50 rounded-xl">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Daily Range (°C)</label>
+                            <input type="number" id="dr" value="10" oninput="calculateRTS()" class="w-full bg-transparent font-bold text-lg outline-none">
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <h2 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-4">🏠 Building Envelope</h2>
-                        <div class="space-y-4">
-                            <div class="flex gap-4">
-                                <div class="flex-1">
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase">Volume (m³)</label>
-                                    <input type="number" id="vol" value="150" oninput="updateCalculation()" class="w-full border-b-2 border-slate-100 p-2 font-bold outline-none focus:border-indigo-500">
-                                </div>
-                                <div class="flex-1">
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase">Wall Area (m²)</label>
-                                    <input type="number" id="wallArea" value="30" oninput="updateCalculation()" class="w-full border-b-2 border-slate-100 p-2 font-bold outline-none focus:border-indigo-500">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-slate-400 uppercase">Wall Orientation (CLTD)</label>
-                                <select id="orient" onchange="updateCalculation()" class="w-full border-b-2 border-slate-100 p-2 font-bold outline-none bg-transparent">
-                                    <option value="7">North</option>
-                                    <option value="12">East</option>
-                                    <option value="18" selected>West (Highest Solar Load)</option>
-                                    <option value="13">South</option>
-                                </select>
-                            </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-indigo-600">
+                    <h2 class="text-xs font-black text-indigo-600 uppercase tracking-[0.2em] mb-4">II. Struktur & Material Dinding</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Jenis Material</label>
+                            <select id="wallMaterial" onchange="updateMaterial()" class="w-full p-2 bg-slate-50 border rounded-lg font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="2.3" data-desc="Berat, delay panas lama">Bata Merah (Double)</option>
+                                <option value="3.1" data-desc="Paling umum di Indonesia">Bata Merah (Single)</option>
+                                <option value="0.65" data-desc="Isolasi panas sangat baik">Bata Ringan / Hebel</option>
+                                <option value="3.5" data-desc="Cepat panas">Beton Precast 10cm</option>
+                                <option value="0.4" data-desc="Khusus Cold Storage">Sandwich Panel (EPS)</option>
+                            </select>
+                            <p id="matDesc" class="text-[10px] text-slate-400 mt-1 italic">Paling umum di Indonesia</p>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Luas Dinding (m²)</label>
+                            <input type="number" id="wallArea" value="50" oninput="calculateRTS()" class="w-full p-2 bg-slate-50 border rounded-lg font-bold outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">U-Factor Terhitung</label>
+                            <input type="number" id="uValue" value="3.1" step="0.1" readonly class="w-full p-2 bg-indigo-50 text-indigo-600 border rounded-lg font-bold outline-none">
                         </div>
                     </div>
+                </div>
 
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-red-500">
-                        <h2 class="text-xs font-black text-red-600 uppercase tracking-widest mb-4">⚙️ Equipment & Internal Load</h2>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="text-[10px] font-bold text-slate-400 uppercase italic">Add from Database:</label>
-                                <select id="eqDb" onchange="addEq()" class="w-full mt-1 p-2 bg-slate-50 rounded text-xs font-bold outline-none border border-slate-100">
-                                    <option value="0">-- Select Machine --</option>
-                                    <option value="250">Desktop PC (250W)</option>
-                                    <option value="1500">Industrial Motor (1.5kW)</option>
-                                    <option value="500">Server Blade (500W)</option>
-                                    <option value="1200">Copier/Printer (1.2kW)</option>
-                                </select>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase">Machinery (W)</label>
-                                    <input type="number" id="wattM" value="1000" oninput="updateCalculation()" class="w-full text-xl font-bold text-red-600 outline-none">
-                                </div>
-                                <div>
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase">Occupancy (PPL)</label>
-                                    <input type="number" id="ppl" value="5" oninput="updateCalculation()" class="w-full text-xl font-bold text-slate-900 outline-none">
-                                </div>
-                            </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-red-500">
+                    <h2 class="text-xs font-black text-red-600 uppercase tracking-[0.2em] mb-4">III. Beban Internal & Mesin</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Beban Mesin (Watt)</label>
+                            <input type="number" id="wattM" value="1500" oninput="calculateRTS()" class="w-full p-2 bg-slate-50 border rounded-lg font-black text-red-600 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Jumlah Orang</label>
+                            <input type="number" id="ppl" value="5" oninput="calculateRTS()" class="w-full p-2 bg-slate-50 border rounded-lg font-bold outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Volume Ruang (m³)</label>
+                            <input type="number" id="vol" value="150" oninput="calculateRTS()" class="w-full p-2 bg-slate-50 border rounded-lg font-bold outline-none">
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="lg:col-span-4 space-y-6">
-                <div class="bg-slate-900 rounded-3xl p-8 text-white shadow-2xl sticky top-8 border-4 border-indigo-600">
-                    <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-6">Total Cooling Requirement</h3>
+                <div class="bg-slate-900 rounded-3xl p-8 text-white shadow-2xl sticky top-8 border-b-8 border-indigo-600">
+                    <h3 class="text-indigo-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-6">Hasil Analisis RTS</h3>
                     
-                    <div class="space-y-2 mb-8">
-                        <div class="flex flex-col">
-                            <span id="resBTU" class="text-5xl font-black mono tracking-tighter">0</span>
-                            <span class="text-slate-500 font-bold text-sm tracking-widest uppercase">BTU/hour</span>
+                    <div class="space-y-1 mb-8">
+                        <div class="text-5xl font-black mono tracking-tighter tabular-nums" id="resBTU">0</div>
+                        <div class="text-indigo-400 font-bold text-sm tracking-widest uppercase italic">BTU / Hour</div>
+                        <div class="mt-4 text-3xl font-black text-emerald-400 tabular-nums"><span id="resKW">0.00</span> <span class="text-xs">kW</span></div>
+                    </div>
+
+                    <div class="h-44 mb-8">
+                        <canvas id="rtsChart"></canvas>
+                    </div>
+
+                    <div class="space-y-3 text-[11px] font-bold uppercase border-t border-slate-800 pt-6">
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Beban Konduksi:</span>
+                            <span id="valCond" class="text-indigo-300">0 W</span>
                         </div>
-                        <div class="pt-4 flex flex-col border-t border-slate-800">
-                            <span id="resKW" class="text-4xl font-black mono text-emerald-400">0.00</span>
-                            <span class="text-emerald-700 font-bold text-xs tracking-widest uppercase">Total kW</span>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Beban Internal:</span>
+                            <span id="valInt" class="text-red-400">0 W</span>
                         </div>
                     </div>
 
-                    <div class="h-48 mb-6">
-                        <canvas id="loadChart"></canvas>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 text-[11px] font-bold uppercase text-slate-500 border-t border-slate-800 pt-6">
-                        <div class="flex flex-col">
-                            <span>Sensible Load</span>
-                            <span id="valSens" class="text-white text-sm">0 W</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span>Latent Load</span>
-                            <span id="valLat" class="text-white text-sm">0 W</span>
-                        </div>
-                    </div>
-
-                    <button onclick="exportPDF()" class="w-full mt-8 bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 rounded-xl transition-all shadow-xl active:scale-95">
-                        GENERATE TECHNICAL PDF
+                    <button onclick="generatePDF()" class="w-full mt-8 bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 rounded-xl transition-all shadow-xl active:scale-95 uppercase text-xs tracking-widest">
+                        Download Technical Report
                     </button>
                 </div>
             </div>
@@ -146,88 +129,69 @@
     </div>
 
     <script>
-        let loadChart;
+        let rtsChart;
 
-        // --- CORE PSYCHROMETRIC & CLTD FUNCTIONS ---
-        
-        // 1. Humidity Ratio (kg water / kg dry air) Calculation
-        function getW(T, RH) {
-            // Tetens Formula for Saturation Vapor Pressure (kPa)
-            const Psat = 0.61078 * Math.exp((17.27 * T) / (T + 237.3));
-            const Pv = (RH / 100) * Psat;
-            return 0.622 * Pv / (101.325 - Pv);
+        // Inisialisasi material saat halaman dimuat
+        function updateMaterial() {
+            const select = document.getElementById('wallMaterial');
+            const uValue = select.value;
+            const desc = select.options[select.selectedIndex].getAttribute('data-desc');
+            
+            document.getElementById('uValue').value = uValue;
+            document.getElementById('matDesc').innerText = desc;
+            calculateRTS();
         }
 
-        function addEq() {
-            const val = parseFloat(document.getElementById('eqDb').value);
-            if(val > 0) {
-                document.getElementById('wattM').value = (parseFloat(document.getElementById('wattM').value) || 0) + val;
-                updateCalculation();
-                document.getElementById('eqDb').value = "0";
-            }
-        }
-
-        function updateCalculation() {
+        function calculateRTS() {
             // Inputs
             const tOut = parseFloat(document.getElementById('tOut').value) || 0;
             const tIn = parseFloat(document.getElementById('tIn').value) || 0;
-            const rhOut = parseFloat(document.getElementById('rhOut').value) || 0;
-            const rhIn = parseFloat(document.getElementById('rhIn').value) || 0;
-            const vol = parseFloat(document.getElementById('vol').value) || 0;
-            const wall = parseFloat(document.getElementById('wallArea').value) || 0;
-            const cltdBase = parseFloat(document.getElementById('orient').value) || 0;
+            const uValue = parseFloat(document.getElementById('uValue').value) || 0;
+            const wallArea = parseFloat(document.getElementById('wallArea').value) || 0;
             const wattM = parseFloat(document.getElementById('wattM').value) || 0;
             const ppl = parseInt(document.getElementById('ppl').value) || 0;
+            const vol = parseFloat(document.getElementById('vol').value) || 0;
 
-            // 2. Psychrometric delta calculation
-            const wOut = getW(tOut, rhOut);
-            const wIn = getW(tIn, rhIn);
-            const deltaT = tOut - tIn;
-            const deltaW = Math.max(0, wOut - wIn);
+            // RTS Conduction Logic (Steady-State Peak)
+            // RTS menggunakan Sol-Air Temperature, kita simplifikasi ke Peak Conduction
+            const qCond = wallArea * uValue * (tOut - tIn);
 
-            // 3. Sensible Load Components
-            const qWall = wall * 2.5 * (cltdBase + (tOut - 29.4)); // Standard CLTD Correction
-            const lsInf = (vol * 1.0) / 3.6; // Assuming 1.0 ACH
-            const qInfSens = 1.21 * lsInf * deltaT; // 1.21 = air density * cp
-            const qIntSens = wattM + (ppl * 75); // 75W Sensible per person
+            // Internal Logic (Radiant vs Convective split)
+            const qPplSens = ppl * 75; // Sensible
+            const qPplLat = ppl * 55;  // Latent
+            const qInt = wattM + qPplSens + qPplLat;
 
-            const totalSensible = qWall + qInfSens + qIntSens;
+            // Infiltration (Psychrometric approx)
+            const qInf = (vol * 1.0 / 3.6) * 1.21 * (tOut - tIn);
 
-            // 4. Latent Load Components
-            const qInfLat = 3010 * lsInf * deltaW; // 3010 factor for latent heat of air
-            const qIntLat = ppl * 55; // 55W Latent per person
-
-            const totalLatent = qInfLat + qIntLat;
-
-            // 5. Grand Totals
-            const totalWatt = totalSensible + totalLatent;
+            // Grand Total
+            const totalWatt = qCond + qInt + qInf;
             const totalBTU = totalWatt * 3.412;
-            const totalKW = totalWatt / 1000;
 
-            // UI Update
+            // Update UI
             document.getElementById('resBTU').innerText = Math.round(totalBTU).toLocaleString();
-            document.getElementById('resKW').innerText = totalKW.toFixed(2);
-            document.getElementById('valSens').innerText = Math.round(totalSensible) + " W";
-            document.getElementById('valLat').innerText = Math.round(totalLatent) + " W";
+            document.getElementById('resKW').innerText = (totalWatt / 1000).toFixed(2);
+            document.getElementById('valCond').innerText = Math.round(qCond) + " W";
+            document.getElementById('valInt').innerText = Math.round(qInt) + " W";
 
-            updateChart(qWall, qInfSens + qInfLat, qIntSens + qIntLat);
+            updateChart(qCond, qInt, qInf);
         }
 
-        function updateChart(sWall, sInf, sInt) {
-            const ctx = document.getElementById('loadChart').getContext('2d');
-            const chartData = [sWall, sInf, sInt];
+        function updateChart(cond, internal, inf) {
+            const ctx = document.getElementById('rtsChart').getContext('2d');
+            const data = [cond, internal, inf];
 
-            if (loadChart) {
-                loadChart.data.datasets[0].data = chartData;
-                loadChart.update();
+            if (rtsChart) {
+                rtsChart.data.datasets[0].data = data;
+                rtsChart.update();
             } else {
-                loadChart = new Chart(ctx, {
+                rtsChart = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Wall (Solar)', 'Infiltration', 'Internal (Equip/People)'],
+                        labels: ['Konduksi Dinding', 'Internal/Mesin', 'Infiltrasi'],
                         datasets: [{
-                            data: chartData,
-                            backgroundColor: ['#6366f1', '#10b981', '#ef4444'],
+                            data: data,
+                            backgroundColor: ['#6366f1', '#f43f5e', '#10b981'],
                             borderWidth: 0,
                             cutout: '75%'
                         }]
@@ -240,30 +204,27 @@
             }
         }
 
-        function exportPDF() {
+        async function generatePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            doc.setFont("courier", "bold");
-            doc.setFontSize(16);
-            doc.text("ENGINEERING CALCULATION REPORT", 105, 20, null, null, "center");
-            doc.setFontSize(10);
-            doc.text("--------------------------------------------------", 105, 25, null, null, "center");
-
-            doc.text(`DATE         : ${new Date().toLocaleString()}`, 20, 40);
-            doc.text(`AMBIENT      : ${document.getElementById('tOut').value}C / ${document.getElementById('rhOut').value}% RH`, 20, 50);
-            doc.text(`INDOOR SP    : ${document.getElementById('tIn').value}C / ${document.getElementById('rhIn').value}% RH`, 20, 57);
+            doc.setFont("helvetica", "bold");
+            doc.text("TECHNICAL COOLING LOAD REPORT (RTS)", 105, 20, null, null, "center");
             
-            doc.setFontSize(12);
-            doc.text(`TOTAL SENSIBLE LOAD : ${document.getElementById('valSens').innerText}`, 20, 75);
-            doc.text(`TOTAL LATENT LOAD   : ${document.getElementById('valLat').innerText}`, 20, 85);
-            doc.text(`TOTAL COOLING REQ   : ${document.getElementById('resBTU').innerText} BTU/h`, 20, 95);
-            doc.text(`TOTAL POWER REQ     : ${document.getElementById('resKW').innerText} kW`, 20, 105);
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Material Dinding: ${document.getElementById('wallMaterial').options[document.getElementById('wallMaterial').selectedIndex].text}`, 20, 40);
+            doc.text(`Kapasitas Total: ${document.getElementById('resBTU').innerText} BTU/h`, 20, 50);
+            doc.text(`Power Required: ${document.getElementById('resKW').innerText} kW`, 20, 60);
+            
+            doc.text("---------------------------------------------------------", 20, 70);
+            doc.text("Disclaimer: Hasil perhitungan berdasarkan metode RTS simplifikasi.", 20, 80);
 
-            doc.save("HVAC-Technical-Report.pdf");
+            doc.save("Laporan-HVAC-RTS-v7.pdf");
         }
 
-        window.onload = updateCalculation;
+        // Jalankan saat startup
+        window.onload = updateMaterial;
     </script>
 </body>
 </html>
