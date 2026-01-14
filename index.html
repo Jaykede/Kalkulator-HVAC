@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HVAC Precision Pro - CLTD Calculator</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="max-w-6xl mx-auto px-4 py-12">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">HVAC Cooling Load Calculator</h1>
+            <p class="text-lg text-slate-600 mt-2">Standar ASHRAE CLTD Method (Dinding & Beban Internal)</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 space-y-8">
+                
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold mb-4 text-blue-700 flex items-center">
+                        <span class="mr-2">📍</span> Kondisi Lingkungan
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Temp Luar Max (°C)</label>
+                            <input type="number" id="tMax" value="35" oninput="updateCalculation()" class="w-full mt-1 p-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Temp Dalam (°C)</label>
+                            <input type="number" id="tIn" value="24" oninput="updateCalculation()" class="w-full mt-1 p-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Daily Range (°C)</label>
+                            <input type="number" id="dr" value="10" oninput="updateCalculation()" class="w-full mt-1 p-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold mb-4 text-blue-700 flex items-center">
+                        <span class="mr-2">🏠</span> Struktur Dinding
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Orientasi Dinding</label>
+                            <select id="orientasi" onchange="updateCalculation()" class="w-full mt-1 p-2 bg-slate-50 border rounded-lg outline-none">
+                                <option value="North">Utara (N)</option>
+                                <option value="East">Timur (E)</option>
+                                <option value="West" selected>Barat (W)</option>
+                                <option value="South">Selatan (S)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Luas Area (m²)</label>
+                            <input type="number" id="area" value="20" oninput="updateCalculation()" class="w-full mt-1 p-2 bg-slate-50 border rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">U-Value Dinding (W/m²K)</label>
+                            <input type="number" id="uValue" value="2.5" step="0.1" oninput="updateCalculation()" class="w-full mt-1 p-2 bg-slate-50 border rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Warna Permukaan</label>
+                            <select id="kColor" onchange="updateCalculation()" class="w-full mt-1 p-2 bg-slate-50 border rounded-lg outline-none">
+                                <option value="1.0">Gelap (Dark)</option>
+                                <option value="0.8">Medium</option>
+                                <option value="0.5">Terang (Light)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold mb-4 text-blue-700 flex items-center">
+                        <span class="mr-2">👥</span> Beban Internal
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Jumlah Orang</label>
+                            <input type="number" id="jmlOrang" value="2" oninput="updateCalculation()" class="w-full mt-1 p-2 bg-slate-50 border rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Total Watt Lampu</label>
+                            <input type="number" id="wattLampu" value="100" oninput="updateCalculation()" class="w-full mt-1 p-2 bg-slate-50 border rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Watt Elektronik</label>
+                            <input type="number" id="wattAlat" value="250" oninput="updateCalculation()" class="w-full mt-1 p-2 bg-slate-50 border rounded-lg outline-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-xl sticky top-8">
+                    <h3 class="text-slate-400 font-semibold uppercase tracking-wider text-sm">Estimasi Kapasitas AC</h3>
+                    <div class="mt-4 flex items-baseline gap-2">
+                        <span id="displayPK" class="text-6xl font-bold text-yellow-400">1.0</span>
+                        <span class="text-2xl font-semibold">PK</span>
+                    </div>
+                    
+                    <div class="mt-8 space-y-4 border-t border-slate-700 pt-6">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400 text-sm">Total Cooling Load:</span>
+                            <span class="font-mono"><span id="displayWatt">0</span> W</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Beban Kalor:</span>
+                            <span class="font-mono"><span id="displayBTU">0</span> BTU/h</span>
+                        </div>
+                    </div>
+
+                    <button onclick="generatePDF()" class="w-full mt-8 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition duration-200 shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Simpan Laporan PDF
+                    </button>
+                    <p class="text-center text-xs text-slate-500 mt-4 italic">Lead Magnet Tool for HVAC Pros</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Referensi ASHRAE Dasar (CLTD Jam 16:00)
+        const CLTD_BASE = { "North": 7, "East": 12, "West": 18, "South": 13 };
+        const LM_CORRECTION = 0.6; // Rata-rata wilayah tropis (Latitude rendah)
+
+        function updateCalculation() {
+            // Get Inputs
+            const tMax = parseFloat(document.getElementById('tMax').value) || 0;
+            const tIn = parseFloat(document.getElementById('tIn').value) || 0;
+            const dr = parseFloat(document.getElementById('dr').value) || 0;
+            const area = parseFloat(document.getElementById('area').value) || 0;
+            const uValue = parseFloat(document.getElementById('uValue').value) || 0;
+            const orientasi = document.getElementById('orientasi').value;
+            const k = parseFloat(document.getElementById('kColor').value);
+            const jmlOrang = parseInt(document.getElementById('jmlOrang').value) || 0;
+            const wattLampu = parseFloat(document.getElementById('wattLampu').value) || 0;
+            const wattAlat = parseFloat(document.getElementById('wattAlat').value) || 0;
+
+            // 1. Hitung CLTD Corr
+            const cltdBase = CLTD_BASE[orientasi];
+            const tAvg = tMax - (dr / 2);
+            const cltdCorr = ((cltdBase + LM_CORRECTION) * k) + (25.5 - tIn) + (tAvg - 29.4);
+
+            // 2. Hitung Beban (Watt)
+            const qDinding = uValue * area * cltdCorr;
+            const qOrang = (jmlOrang * 75) + (jmlOrang * 55); // Sensible + Latent
+            const qInternal = (wattLampu * 1.2) + wattAlat;
+            
+            const totalWatt = qDinding + qOrang + qInternal;
+            const totalBTU = totalWatt * 3.412;
+
+            // 3. PK Logic
+            let pk = "0.5";
+            if (totalBTU > 5000) pk = "0.75";
+            if (totalBTU > 7000) pk = "1.0";
+            if (totalBTU > 9000) pk = "1.5";
+            if (totalBTU > 12000) pk = "2.0";
+            if (totalBTU > 18000) pk = "2.5+";
+
+            // 4. Update UI
+            document.getElementById('displayWatt').innerText = Math.round(totalWatt).toLocaleString();
+            document.getElementById('displayBTU').innerText = Math.round(totalBTU).toLocaleString();
+            document.getElementById('displayPK').innerText = pk;
+        }
+
+        async function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Ambil data terbaru dari UI
+            const watt = document.getElementById('displayWatt').innerText;
+            const btu = document.getElementById('displayBTU').innerText;
+            const pk = document.getElementById('displayPK').innerText;
+            const orientasi = document.getElementById('orientasi').value;
+
+            // Styling PDF
+            doc.setFont("helvetica", "bold");
+            doc.text("HVAC COOLING LOAD REPORT", 105, 20, null, null, "center");
+            
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Generated on: ${new Date().toLocaleString()}`, 20, 30);
+            doc.line(20, 32, 190, 32);
+
+            doc.setFontSize(12);
+            doc.text("Project Parameters:", 20, 45);
+            doc.text(`- Wall Orientation: ${orientasi}`, 25, 55);
+            doc.text(`- Surface Area: ${document.getElementById('area').value} m2`, 25, 62);
+            doc.text(`- Occupancy: ${document.getElementById('jmlOrang').value} People`, 25, 69);
+
+            doc.setFont("helvetica", "bold");
+            doc.text("Calculation Results:", 20, 85);
+            doc.text(`Total Cooling Load: ${watt} Watt`, 25, 95);
+            doc.text(`Cooling Capacity: ${btu} BTU/hr`, 25, 102);
+            
+            doc.setFillColor(234, 179, 8); // Yellow color for recommendation
+            doc.rect(20, 110, 170, 15, 'F');
+            doc.setTextColor(0);
+            doc.text(`Recommended AC Capacity: ${pk} PK`, 105, 120, null, null, "center");
+
+            doc.setTextColor(150);
+            doc.setFontSize(8);
+            doc.text("Disclaimer: This is a preliminary calculation based on CLTD method. Consult with a professional engineer for final design.", 105, 280, null, null, "center");
+
+            doc.save(`HVAC-Report-${orientasi}.pdf`);
+        }
+
+        // Jalankan kalkulasi pertama kali saat load
+        window.onload = updateCalculation;
+    </script>
+</body>
+</html>
